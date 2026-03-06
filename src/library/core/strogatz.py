@@ -76,5 +76,5 @@ class dynamics2D(object):
         # init_x = np.array(initials)
         self.ax.streamplot(
             self.XY[..., 0], self.XY[..., 1], self.UV[..., 0], self.UV[..., 1], 
-            start_points=initials, color='tab:blue', linewidth=2, maxlength=max_length
+            start_points=initials, color='tab:orange', linewidth=1.0, maxlength=max_length
         )
