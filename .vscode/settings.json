@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "*/.pyenv/versions/*/envs/*/lib/*/site-packages",
+        "*/pypoetry/virtualenvs/*/lib/*/site-packages",
+        "./src/library/"
+    ]
+}
