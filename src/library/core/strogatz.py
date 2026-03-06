@@ -56,7 +56,17 @@ class dynamics2D(object):
     def add_nullclines(self):
         self.ax.contour(self.XY[..., 0], self.XY[..., 1], self.UV[..., 0], levels=[0], cmap="hsv")
         self.ax.contour(self.XY[..., 0], self.XY[..., 1], self.UV[..., 1], levels=[0], cmap="hsv")
-    
+        
+        extracted_points = []
+        for i in range(2):
+            _obj = self.ax.contour(self.XY[..., 0], self.XY[..., 1], self.UV[..., i], levels=[0], cmap="hsv")
+            _points = []
+            for path in _obj.get_paths():
+                v = path.vertices
+                _points.append(v)
+            extracted_points.append(np.array(_points[0]))
+        dist = np.linalg.norm(extracted_points[0][:, None, :]-extracted_points[1][None, :, :], axis=-1)
+        return dist
     def add_fixed_points(self, fixed_points: list[list], fp_types: list[str], markersize: float = 12):
         fp = np.array(fixed_points)
         fpt = np.array(fp_types)
