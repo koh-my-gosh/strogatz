@@ -9,7 +9,7 @@ from typing import Callable, List
 class dynamics2D(object):
     def __init__(
         self, F: list[Callable[[int], int]], xlim: tuple, ylim: tuple, 
-        n_interval: int = 5, fig_scale: float = 1.0
+        n_interval: int = 5, fig_scale: float = 1.0, ax = None
     ):
         assert len(F) == 2
         assert len(xlim) == 2 and len(ylim) == 2
@@ -22,10 +22,13 @@ class dynamics2D(object):
         self.fig_scale = fig_scale
         self.init_meshgrid()
         self.get_UV()
-        self.init_axes()
+        self.init_axes(ax=ax)
         
-    def init_axes(self):
-        self.fig, self.ax = plt.subplots(figsize=(self.xwidth*self.fig_scale, self.ywidth*self.fig_scale))
+    def init_axes(self, ax=None):
+        if ax is None:
+            self.fig, self.ax = plt.subplots(figsize=(self.xwidth*self.fig_scale, self.ywidth*self.fig_scale))
+        else:
+            self.ax = ax
         self.ax.set_xlim(*self.xlim)
         self.ax.set_ylim(*self.ylim)
         self.ax.grid()
@@ -56,13 +59,22 @@ class dynamics2D(object):
     
     def add_fixed_points(self, fixed_points: list[list], fp_types: list[str], markersize: float = 12):
         fp = np.array(fixed_points)
+        fpt = np.array(fp_types)
         assert fp.shape[-1] == 2
-        assert fp.shape[0] == len(fp_types)
+        assert fpt.shape[0] == len(fp_types)
         
         # FIXME: fp_types
-        self.ax.plot(fp[..., 0], fp[..., 1], marker=".", markersize=markersize, color="tab:red")
-        self.ax.plot(fp[..., 0], fp[..., 1], marker=".", markersize=0.5*markersize, color="white")
+        self.ax.plot(fp[..., 0], fp[..., 1], marker=".", markersize=markersize, color="tab:red", linewidth=0.0)
         
-    def add_flows(self, initials: list[list]):
-        init_x = np.array(initials)
-        self.ax.streamplot(self.XY[..., 0], self.XY[..., 1], self.UV[..., 0], self.UV[..., 1], start_points=init_x, color='tab:blue', linewidth=2)
+        saddle_idx = np.where(fpt == "saddle")[0]
+        self.ax.plot(fp[saddle_idx, 0], fp[saddle_idx, 1], marker=".", markersize=0.5*markersize, color="white", linewidth=0.0)
+        
+        unstable_idx = np.where(fpt == "unstable")[0]
+        self.ax.plot(fp[unstable_idx, 0], fp[unstable_idx, 1], marker=".", markersize=0.5*markersize, color="white", linewidth=0.0)
+        
+    def add_flows(self, initials: list[list], max_length: float = 10.0):
+        # init_x = np.array(initials)
+        self.ax.streamplot(
+            self.XY[..., 0], self.XY[..., 1], self.UV[..., 0], self.UV[..., 1], 
+            start_points=initials, color='tab:blue', linewidth=2, maxlength=max_length
+        )
