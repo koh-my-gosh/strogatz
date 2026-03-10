@@ -3,6 +3,7 @@
 
 import numpy as np
 from tqdm import tqdm
+from scipy import optimize
 import matplotlib.pyplot as plt
 from typing import Callable, List
 
